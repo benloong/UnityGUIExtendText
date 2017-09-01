@@ -6,7 +6,6 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[AddComponentMenu("UI/Extend Text")]
 public class ExtendText : Text , IPointerClickHandler
 {
     /// <summary>
@@ -371,7 +370,7 @@ public class ExtendText : Text , IPointerClickHandler
 
             Bounds bounds = new Bounds(verts[begin].position, Vector3.zero);
 
-            for (int i = begin; i < end && i < verts.Count; i++)
+            for (int i = begin; i < end && i < verts.Count - 4; i++) // 最后4个顶点是换行符
             {
                 var pos = verts[i].position;
                
@@ -388,7 +387,11 @@ public class ExtendText : Text , IPointerClickHandler
                     bounds.Encapsulate(pos);
                 }
             }
-            tag.boxes.Add(new Rect(bounds.min, bounds.size));
+
+            if (bounds.size.x > 0 && bounds.size.y > 0) // 检测不是个空盒子
+            {
+                tag.boxes.Add(new Rect(bounds.min, bounds.size));
+            }
         }
     }
 
