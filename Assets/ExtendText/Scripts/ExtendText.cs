@@ -206,7 +206,7 @@ public class ExtendText : Text , IPointerClickHandler
             var childGraphic = child.GetComponent<Graphic>();
 
             int vIndex = emojTags[i].charIndex * 4;
-            if ((vIndex + 4) > verts.Count)
+            if ((vIndex + 4) >= verts.Count)
             {
                 // 直接改alpha会引起Trying to XXX for graphic rebuild while we are already inside a graphic rebuild loop. This is not supported.
                 // 这里改alpha为0 隐藏
