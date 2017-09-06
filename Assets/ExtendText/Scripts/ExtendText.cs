@@ -341,6 +341,7 @@ public class ExtendText : Text , IPointerClickHandler
                 rect.gameObject.hideFlags = HideFlags.HideAndDontSave; 
                 rect.SetParent(emojRoot, false);
                 rect.gameObject.AddComponent<EmojImage>();
+                rect.GetComponent<Graphic>().raycastTarget = false;
             }
 
             rect.GetComponent<EmojImage>().Emoj = emojTags[i].emoj;
