@@ -1,4 +1,3 @@
-﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -9,10 +8,10 @@ using UnityEngine.UI;
 public class ExtendText : Text , IPointerClickHandler
 {
     /// <summary>
-    ///  表情格式 [[00]]
-    ///  链接格式 [[连接名@url]]
+    ///  表情格式 <00>
+    ///  链接格式 <连接名@url>
     /// </summary>
-    private static Regex emojRegex = new Regex(@"(?<emoj>(\[\[[0-9]{2}\]\]))|(?<href>(\[\[(.+?)\@(.+?)\]\]))");
+	private static Regex emojRegex = new Regex(@"<(?<emoj>([0-9]{2}))>|<(?<href>((.+?)\@(.+?)))>");
 
     private const string underline = "_";
 
@@ -199,6 +198,7 @@ public class ExtendText : Text , IPointerClickHandler
 
     void PositionEmojs(IList<UIVertex> verts)
     {
+        float unitsPerPixel = 1 / pixelsPerUnit;
         for (int i = 0; i < emojTags.Count; i++)
         {
             var child = emojRoot.GetChild(i);
@@ -206,7 +206,7 @@ public class ExtendText : Text , IPointerClickHandler
             var childGraphic = child.GetComponent<Graphic>();
 
             int vIndex = emojTags[i].charIndex * 4;
-            if ((vIndex + 4) >= verts.Count)
+            if ((vIndex + 4) >= verts.Count) // 最后四个顶点
             {
                 // 直接改alpha会引起Trying to XXX for graphic rebuild while we are already inside a graphic rebuild loop. This is not supported.
                 // 这里改alpha为0 隐藏
@@ -228,7 +228,7 @@ public class ExtendText : Text , IPointerClickHandler
             }
 
             childGraphic.CrossFadeAlpha(1, 0f, true);
-            child.localPosition = min + (max - min) / 2;
+            child.localPosition = (min + (max - min) / 2 ) * unitsPerPixel;
         }
     }
 
@@ -275,7 +275,7 @@ public class ExtendText : Text , IPointerClickHandler
                 if (string.IsNullOrEmpty(emoj) == false)
                 {
 
-                    var emojId = val.Substring(2, 2);
+                    var emojId = emoj;
 
                     var emojInfo = emojDatabase.GetEmoj(emojId);
 
@@ -293,7 +293,7 @@ public class ExtendText : Text , IPointerClickHandler
                 }
                 else if (string.IsNullOrEmpty(href) == false)
                 {
-                    var content = val.Replace("[[", "").Replace("]]", "");
+                    var content = href;
                     var pivot = content.IndexOf('@');
 
                     var desc = content.Substring(0, pivot);
@@ -456,70 +456,63 @@ public class ExtendText : Text , IPointerClickHandler
         float xMax = box.xMax;
         float yMax = box.yMin + height; // 高度
 
+        float unitsPerPixel = 1 / pixelsPerUnit;
         {
-            m_TempVerts[0].position = new Vector3(xMin, yMax);
+            m_TempVerts[0].position = new Vector3(xMin, yMax) * unitsPerPixel;
             m_TempVerts[0].uv0 = uv0;
 
-            m_TempVerts[1].position = new Vector3(xMin + width * 0.5f, yMax);
+            m_TempVerts[1].position = new Vector3(xMin + width * 0.5f, yMax) * unitsPerPixel;
             m_TempVerts[1].uv0 = topCenterUv;
 
-            m_TempVerts[2].position = new Vector3(xMin + width * 0.5f, yMin);
+            m_TempVerts[2].position = new Vector3(xMin + width * 0.5f, yMin) * unitsPerPixel;
             m_TempVerts[2].uv0 = bottomCenterUv;
 
-            m_TempVerts[3].position = new Vector3(xMin, yMin);
+            m_TempVerts[3].position = new Vector3(xMin, yMin) * unitsPerPixel;
             m_TempVerts[3].uv0 = uv3;
 
             toFill.AddUIVertexQuad(m_TempVerts);
         }
         {
-            m_TempVerts[0].position = new Vector3(xMin + width * 0.5f, yMax);
+            m_TempVerts[0].position = new Vector3(xMin + width * 0.5f, yMax) * unitsPerPixel;
             m_TempVerts[0].uv0 = topCenterUv;
 
-            m_TempVerts[1].position = new Vector3(xMax - width * 0.5f, yMax);
+            m_TempVerts[1].position = new Vector3(xMax - width * 0.5f, yMax) * unitsPerPixel;
             m_TempVerts[1].uv0 = topCenterUv;
 
-            m_TempVerts[2].position = new Vector3(xMax - width * 0.5f, yMin);
+            m_TempVerts[2].position = new Vector3(xMax - width * 0.5f, yMin) * unitsPerPixel;
             m_TempVerts[2].uv0 = bottomCenterUv;
 
-            m_TempVerts[3].position = new Vector3(xMin + width * 0.5f, yMin);
+            m_TempVerts[3].position = new Vector3(xMin + width * 0.5f, yMin) * unitsPerPixel;
             m_TempVerts[3].uv0 = bottomCenterUv;
 
             toFill.AddUIVertexQuad(m_TempVerts);
         }
 
         {
-            m_TempVerts[0].position = new Vector3(xMax - width * 0.5f, yMax);
+            m_TempVerts[0].position = new Vector3(xMax - width * 0.5f, yMax) * unitsPerPixel;
             m_TempVerts[0].uv0 = topCenterUv;
 
-            m_TempVerts[1].position = new Vector3(xMax, yMax);
+            m_TempVerts[1].position = new Vector3(xMax, yMax) * unitsPerPixel;
             m_TempVerts[1].uv0 = uv1;
 
-            m_TempVerts[2].position = new Vector3(xMax, yMin);
+            m_TempVerts[2].position = new Vector3(xMax, yMin) * unitsPerPixel;
             m_TempVerts[2].uv0 = uv2;
 
-            m_TempVerts[3].position = new Vector3(xMax - width * 0.5f, yMin);
+            m_TempVerts[3].position = new Vector3(xMax - width * 0.5f, yMin) * unitsPerPixel;
             m_TempVerts[3].uv0 = bottomCenterUv;
 
             toFill.AddUIVertexQuad(m_TempVerts);
         }
     }
 
-    TextGenerator underlineTextGenerator;
     UIVertex[] GetUnderlineVerts(TextGenerationSettings settings)
     {
-        if (underlineTextGenerator == null)
-        {
-            underlineTextGenerator = new TextGenerator();
-        }
-
-        float unitsPerPixel = 1 / pixelsPerUnit;
         cachedTextGenerator.Populate(underline, settings);
         var verts = cachedTextGenerator.verts;
 
         for (int i = 0; i < verts.Count && i < 4; i++)
         {
             underlineVerts[i] = verts[i];
-            underlineVerts[i].position *= unitsPerPixel;
         }
 
         return underlineVerts;
@@ -603,5 +596,4 @@ public class ExtendText : Text , IPointerClickHandler
         base.OnValidate();
     }
 #endif
-
 }
